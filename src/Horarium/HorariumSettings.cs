@@ -10,6 +10,8 @@ namespace Horarium
 
         public TimeSpan ObsoleteExecutingJob { get; set; } = TimeSpan.FromMinutes(5);
 
+        public JobThrottleSettings JobThrottleSettings { get; set; } = new JobThrottleSettings();
+
         public IJobScopeFactory JobScopeFactory { get; set; } = new DefaultJobScopeFactory();
 
         public IHorariumLogger Logger { get; set; } = new EmptyLogger();

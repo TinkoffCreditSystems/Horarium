@@ -97,5 +97,39 @@ namespace Horarium.Test
             // Assert
             jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         }
+
+        [Fact]
+        public async Task Start_ExecutionWithDelay_WithThrottle()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            var settings = new HorariumSettings
+            {
+                IntervalStartJob = TimeSpan.FromSeconds(1),
+                JobThrottleSettings = new JobThrottleSettings
+                {
+                    UseJobThrottle = true,
+                    IntervalMultiplier = 1,
+                    JobRetrievalAttempts = 1
+                }
+            };
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                settings,
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>());
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(settings.IntervalStartJob - TimeSpan.FromMilliseconds(500));
+            jobRepositoryMock.Invocations.Clear();
+
+            await Task.Delay(settings.IntervalStartJob + settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier));
+            
+            // Assert
+            jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
+        }
     }
 }
