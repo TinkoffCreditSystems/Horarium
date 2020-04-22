@@ -149,6 +149,20 @@ Horarium guarantees that a job would run **exactly once**
 
 Every Horarium instance consults MongoDB about new jobs to run every 100ms (default), thus creating some load on the DB server. This interval can be changed in ```HorariumSettings```
 
+If you want to decrease load, you can use job throttling that will automatically increase interval if there are no jobs available after certain attempts. To enable this feature, pass `JobThrottleSettings` to `HorariumSettings` with property `UseJobThrottle` set to true.
+
+```csharp
+var settings = new HorariumSettings
+{
+    JobThrottleSettings = new JobThrottleSettings
+    {
+        UseJobThrottle = true
+    }
+};
+```
+
+For more information about configuration, see `JobThrottleSettings`
+
 ## Using Horarium with SimpleInjector
 
 To use Horarium with SimpleInjector one should implement its own `IJobFactory`, using `Container` from `SimpleInjector`. For example:
