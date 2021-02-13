@@ -114,5 +114,27 @@ namespace Horarium.InMemory
         {
             return Task.FromResult(_storage.GetStatistics());
         }
+
+        public Task RescheduleRecurrentJob(string jobId, DateTime? startAt, Exception error)
+        {
+            return _processor.Execute(() =>
+            {
+                var job = _storage.GetById(jobId);
+                if (job == null) return;
+
+                _storage.Remove(job);
+                
+                if (startAt == null)
+                {
+                    return;
+                }
+
+                job.Status = JobStatus.Ready;
+                job.StartAt = startAt.Value;
+                job.Error = error.Message + error.StackTrace;
+
+                _storage.Add(job);
+            });
+        }
     }
 }

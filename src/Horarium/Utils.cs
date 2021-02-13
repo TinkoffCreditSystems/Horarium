@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Cronos;
 using Newtonsoft.Json;
 
 namespace Horarium
@@ -20,6 +21,13 @@ namespace Horarium
         {
             string retValue = type.FullName + ", " + type.GetTypeInfo().Assembly.GetName().Name;
             return retValue;
+        }
+        
+        public static DateTime? ParseAndGetNextOccurrence(string cron)
+        {
+            var expression = CronExpression.Parse(cron, CronFormat.IncludeSeconds);
+            
+            return expression.GetNextOccurrence(DateTime.UtcNow, TimeZoneInfo.Local);
         }
     }
 }

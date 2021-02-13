@@ -26,7 +26,7 @@ namespace Horarium.Builders.Recurrent
         
         public override Task Schedule()
         {
-            var nextOccurence = ParseAndGetNextOccurrence(Job.Cron);
+            var nextOccurence = Utils.ParseAndGetNextOccurrence(Job.Cron);
 
             if (!nextOccurence.HasValue)
             {
@@ -37,13 +37,6 @@ namespace Horarium.Builders.Recurrent
             Job.JobKey = Job.JobKey ?? Job.JobType.Name;
             
             return _adderJobs.AddRecurrentJob(Job);
-        }
-
-        private static DateTime? ParseAndGetNextOccurrence(string cron)
-        {
-            var expression = CronExpression.Parse(cron, CronFormat.IncludeSeconds);
-            
-            return expression.GetNextOccurrence(DateTime.UtcNow, TimeZoneInfo.Local);
         }
     }
 }

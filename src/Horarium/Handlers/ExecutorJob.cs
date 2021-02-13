@@ -106,14 +106,16 @@ namespace Horarium.Handlers
 
                     _settings.Logger.Debug("jobMetadata excecuted");
 
-                    await _jobRepository.RemoveJob(jobMetadata.JobId);
+                    await _jobRepository.RescheduleRecurrentJob(jobMetadata.JobId,
+                        Utils.ParseAndGetNextOccurrence(jobMetadata.Cron), null);
 
                     _settings.Logger.Debug("jobMetadata saved success");
                 }
             }
             catch (Exception ex)
             {
-                await _jobRepository.FailedJob(jobMetadata.JobId, ex);
+                await _jobRepository.RescheduleRecurrentJob(jobMetadata.JobId,
+                    Utils.ParseAndGetNextOccurrence(jobMetadata.Cron), ex);
             }
             finally
             {

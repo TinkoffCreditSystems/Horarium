@@ -151,7 +151,7 @@ namespace Horarium.Test
         }
 
         [Fact]
-        public async Task RecurrentJob_DeleteAfterRun()
+        public async Task RecurrentJob_RescheduleAfterRun()
         {
             var jobRepositoryMock = new Mock<IJobRepository>();
             var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
@@ -179,7 +179,7 @@ namespace Horarium.Test
                 Cron = cron
             });
 
-            jobRepositoryMock.Verify(x => x.RemoveJob(It.IsAny<string>()));
+            jobRepositoryMock.Verify(x => x.RescheduleRecurrentJob(It.IsAny<string>(), It.IsAny<DateTime>(), null));
         }
 
         [Fact]
